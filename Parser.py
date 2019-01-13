@@ -12,7 +12,7 @@ end_main = 0  # Flag internal loop for main
 code = []  # Where to put the main block
 while end_lecture == 0:
     row = f.readline()
-    useful = row.find("<main>:")  # Searching starting point
+    useful = row.find("<find_min>:")  # Searching starting point
     if (useful != -1):
         # code.append(row.strip())
         while end_main == 0:
@@ -33,6 +33,7 @@ f.close()
 graph = nx.DiGraph()
 graph.clear()
 len(code)
+instr_set = []
 for i in range(0, len(code)):
     prev_is_branch = 0  # Flag used to manage the targets
     if((i + 1) < len(code)):  # Still not the last row
@@ -78,6 +79,11 @@ for i in range(0, len(code)):
                 graph.add_node(str(target[0]))
             graph.add_edge(address, str(target[0]))
 
+        if prev_instruction not in instr_set:
+            instr_set.append(prev_instruction)
+        if instruction not in instr_set:
+            instr_set.append(instruction)
+
     else:   # This is the last row
         parsed = re.split("\t", code[i])
         address = parsed[0]     # take first element
@@ -89,16 +95,24 @@ for i in range(0, len(code)):
         if (instruction[0]) == "b":
             target = parsed[3].split(" ")   # There could be the target name
             # print("branch to " + str(target[0]))
+        if instruction not in instr_set:
+            instr_set.append(instruction)
         graph.add_node(str(target[0]))
         graph.add_edge(address, str(target[0]))
 
     # print(graph.nodes)
-
-for i in graph.nodes():
-    print(list(graph.neighbors(i)))
+#
+# for i in graph.nodes():
+#     if((list(graph.neighbors(i)).count) == 0):
+print("#############################################")
+print("#### Assembly Parser - CFG Reconstructor ####")
+print("#############################################")
+print("\nList of instructions:")
+for i in instr_set:
+    print("\t" + str(i))
 
 graph.number_of_nodes()
 nodes = sorted(graph.nodes())
-print("List of adjacent nodes:")
+print("\nList of adjacent nodes:")
 for i in nodes:
     print("\tNode " + str(i) + " --> " + str(list(graph.neighbors(i))))
