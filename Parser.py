@@ -2,8 +2,7 @@
 import networkx as nx
 # Using re = regular expressions for the lines parsing
 import re
-# Importing this library for the graphic representation
-import matplotlib.pyplot as plt
+
 # I am assming that the file exists and user has permissions -> No checks
 f = open("out.txt", "r")
 
@@ -99,9 +98,3 @@ nodes = sorted(graph.nodes())
 print("List of adjacent nodes:")
 for i in nodes:
     print("\tNode " + str(i) + " --> " + str(list(graph.neighbors(i))))
-
-# plt.subplot(121)
-# nx.draw(G, with_labels=True, font_weight='bold')
-# plt.subplot(122)
-# nx.draw_shell(graph)
-# plt.show()
