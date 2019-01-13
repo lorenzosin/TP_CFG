@@ -33,10 +33,14 @@ graph = nx.Graph()
 for row in code:
     parsed = re.split("\t", row)
     address = parsed[0]     # take first element
-    address = address[:-1]  # remove the ':' char
+    address = address[:-1]  # remove the ':' character
     name = parsed[1]
     instruction = parsed[2]
     arguments = parsed[3]
+    graph.add_node(address)
     if (instruction[0]) == "b":
-        print("branch: " + str(parsed))
-    # print(parsed)
+        target = parsed[3].split(" ")   # There could be the target name
+        print("branch to " + str(target[0]))
+
+    print(parsed)
+print(graph.nodes)
