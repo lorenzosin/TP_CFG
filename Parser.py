@@ -12,7 +12,7 @@ end_main = 0  # Flag internal loop for main
 code = []  # Where to put the main block
 while end_lecture == 0:
     row = f.readline()
-    useful = row.find("<find_min>:")  # Searching starting point
+    useful = row.find("<main>:")  # Searching starting point
     if (useful != -1):
         # code.append(row.strip())
         while end_main == 0:
@@ -31,6 +31,7 @@ f.close()
 #     print(i)
 
 graph = nx.DiGraph()
+graph.clear()
 len(code)
 for i in range(0, len(code)):
     prev_is_branch = 0  # Flag used to manage the targets
@@ -92,6 +93,9 @@ for i in range(0, len(code)):
         graph.add_edge(address, str(target[0]))
 
     # print(graph.nodes)
+
+for i in graph.nodes():
+    print(list(graph.neighbors(i)))
 
 graph.number_of_nodes()
 nodes = sorted(graph.nodes())
