@@ -2,6 +2,10 @@
 import networkx as nx
 # Using re = regular expressions for the lines parsing
 import re
+# Using os to run terminal command for the conversion dot -> pdf
+import os
+# Using graph to generate the dot file
+from graphviz import Digraph
 
 # I am assming that the file exists and user has permissions -> No checks
 f = open("out.txt", "r")
@@ -12,7 +16,7 @@ end_main = 0  # Flag internal loop for main
 code = []  # Where to put the main block
 while end_lecture == 0:
     row = f.readline()
-    useful = row.find("<find_min>:")  # Searching starting point
+    useful = row.find("<main>:")  # Searching starting point
     if (useful != -1):
         # code.append(row.strip())
         while end_main == 0:
@@ -107,7 +111,7 @@ for i in range(0, len(code)):
 print("#############################################")
 print("#### Assembly Parser - CFG Reconstructor ####")
 print("#############################################")
-print("\nList of instructions:")
+print("Instruction Set:")
 for i in instr_set:
     print("\t" + str(i))
 
@@ -116,3 +120,33 @@ nodes = sorted(graph.nodes())
 print("\nList of adjacent nodes:")
 for i in nodes:
     print("\tNode " + str(i) + " --> " + str(list(graph.neighbors(i))))
+
+# Generate the new dot file
+# WriteDot("CFG.dot", graph)
+# dot = Digraph("Reconstructed CFG")
+# for i in graph.nodes():
+#     dot.node(i)
+#
+# for i in graph.edges():
+#     print(i)
+#
+# print(dot.source)
+#
+# dot.render("CFG")
+
+
+# def WriteDot(fout, graph):
+print("Generating output file CFG.dot..")
+f = open("CFG.dot", "w")
+f.write("digraph ReconstructedCFG {\n")
+for i in nodes:
+    # f.write("\t" + i + " [ label = \"" + i + "\" ];\n")
+    f.write("\t\"" + i + "\";\n")
+    neigh = list(graph.neighbors(i))
+    for j in range(len(neigh)):
+        f.write("\t\"" + str(i) + "\" -> \"" + neigh[j] + "\";\n")
+f.write("}")
+f.close()
+
+print("Generating output file CFG.dot..")
+os.system("dot -Tps CFG.dot -o CFG.pdf")
