@@ -1,5 +1,7 @@
 digraph ReconstructedCFG {
-	"Entry Point";	"Entry Point" -> "8220";	"8220";
+	"Entry Point";
+	"Entry Point" -> "8220";
+	"8220";
 	"8220" -> "8224" [label = ""] ;
 	"8224";
 	"8224" -> "8228" [label = ""] ;
@@ -24,6 +26,6 @@ digraph ReconstructedCFG {
 	"8248";
 	"8248" -> "824c" [label = ""] ;
 	"824c";
-	"824c" -> "lr" [label = "taken"] ;
-	"lr";
-	"Exit";	"lr" -> "Exit";}
+	"Exit";
+	"824c" -> "Exit";
+}

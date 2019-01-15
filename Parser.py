@@ -31,86 +31,87 @@ f.close()
 
 # Graph construction
 graph = nx.DiGraph()
-graph.clear()           # This should be remover after
-instr_set = []          # Store all the found instruction
-for i in range(0, len(code)):
-    prev_is_branch = 0  # Flag used to manage the targets
-    is_branch = 0
-    if((i + 1) < len(code)):  # Still not the last row
-        # First line of the pair
-        prev_parsed = re.split("\t", code[i])
-        prev_address = prev_parsed[0]     # take first element
-        prev_address = prev_address[:-1]  # remove the ':' character
-        prev_name = prev_parsed[1]
-        prev_instruction = prev_parsed[2]
-        prev_arguments = prev_parsed[3]
 
-        if is_branch == 1:
-            add_edge(address, prev_address, label="untaken")
 
-        if (prev_address not in graph.nodes()):
-            graph.add_node(prev_address)
+# Code parsing
+code_parsed = []
+for i in range(len(code)):
+    row = re.split("\t", code[i])
+    code_parsed.append(row)
 
-        if (prev_instruction[0]) == "b":
-            # There could be the target name
-            prev_is_branch = 1
-            prev_target = prev_parsed[3].split(" ")
-            # print("branch to " + str(target[0]))
-            if (str(prev_target[0]) not in graph.nodes()):
-                graph.add_node(str(prev_target[0]))
-                graph.add_edge(prev_address, str(
-                    prev_target[0]), label="taken")
+# print(code_parsed)
 
-        # Following line
-        parsed = re.split("\t", code[i + 1])
-        address = parsed[0]     # take first element
-        address = address[:-1]  # remove the ':' character
-        name = parsed[1]
-        instruction = parsed[2]
-        arguments = parsed[3]
+# for i in range(len(code)):
+#     print(code_parsed[i][0])
 
-        # Adding the new node, if not already discovered
-        if(address not in graph.nodes()):
-            graph.add_node(address)
+for i in range(len(code_parsed)):
+    addr = code_parsed[i][0]
+    code_parsed[i][0] = addr[:-1]
 
-        # Connect the previous instruction with the following one, if the case
-        if(prev_is_branch == 0):
-            graph.add_edge(prev_address, address, label="")
+
+instr_set = []
+same_block = []
+for i in range(len(code_parsed)):
+    addr = code_parsed[i][0]
+    same_block.append(addr)
+    instr = code_parsed[i][2]
+    if instr not in instr_set:
+        instr_set.append(instr)
+
+# print(same_block)
+# print(instr_set)
+
+l_instr = -1  # Flag until found
+for i in range(len(code_parsed)):
+    addr = code_parsed[i][0]
+    instr = code_parsed[i][2]
+    graph.add_node(addr)
+    if instr == "b" or instr == "bx" or instr == "bl":  # Unconditional branch
+        tmp = code_parsed[i][3]
+        pars = tmp.split(" ")
+        n_instr = pars[0]
+        if n_instr == "lr":
+            l_instr = instr
+            l_addr = addr
+            break
         else:
-            graph.add_edge(prev_address, address, label="untaken")
+            if n_instr in same_block:
+                graph.add_edge(addr, n_instr, label="Unconditional branch")
+            else:
+                graph.add_edge(
+                    addr, n_instr, label="Unconditional branch to outer block")
+                if i + 1 < len(code_parsed):
+                    graph.add_edge(
+                        n_instr, code_parsed[i + 1][0], label="Return from outer block")
+    else:
+        if instr[0] == "b":  # In this branch, only conditional ones remained
+            tmp = code_parsed[i][3]
+            pars = tmp.split(" ")
+            n_instr = pars[0]
+            if n_instr == "lr":
+                l_instr = instr
+                l_addr = addr
+                break
+            else:
+                if n_instr in same_block:
+                    graph.add_edge(addr, n_instr, label="taken")
+                    if i + 1 < len(code_parsed):
+                        graph.add_edge(
+                            addr, code_parsed[i + 1][0], label="untaken")
+                else:
+                    graph.add_edge(
+                        addr, n_instr, label="taken to outer block")
+                    if i + 1 < len(code_parsed):
+                        graph.add_edge(
+                            n_instr, code_parsed[i + 1][0], label="Return from outer block")
+                        graph.add_edge(
+                            addr, code_parsed[i + 1][0], label="untaken")
+        else:
+            if i + 1 < len(code_parsed):
+                graph.add_edge(addr, code_parsed[i + 1][0], label="")
 
-        if (instruction[0]) == "b":
-            is_branch = 1
-            target = parsed[3].split(" ")   # There could be the target name
-            if (str(target[0]) not in graph.nodes()):
-                graph.add_node(str(target[0]))
-            graph.add_edge(address, str(target[0]), label="taken")
+# print(graph.nodes())
 
-        if prev_instruction not in instr_set:
-            instr_set.append(prev_instruction)
-        if instruction not in instr_set:
-            instr_set.append(instruction)
-
-    else:   # This is the last row
-        parsed = re.split("\t", code[i])
-        address = parsed[0]     # take first element
-        address = address[:-1]  # remove the ':' character
-        name = parsed[1]
-        instruction = parsed[2]
-        arguments = parsed[3]
-        graph.add_node(address)
-        if (instruction[0]) == "b":
-            target = parsed[3].split(" ")   # There could be the target name
-            graph.add_node(str(target[0]))
-            graph.add_edge(address, str(target[0]), label="taken")
-            # print("branch to " + str(target[0]))
-        if instruction not in instr_set:
-            instr_set.append(instruction)
-
-    # print(graph.nodes)
-#
-# for i in graph.nodes():
-#     if((list(graph.neighbors(i)).count) == 0):
 print("#############################################")
 print("#### Assembly Parser - CFG Reconstructor ####")
 print("#############################################")
@@ -128,8 +129,9 @@ for i in nodes:
 print("Generating output file CFG.dot..")
 f = open("CFG.dot", "w")
 f.write("digraph ReconstructedCFG {\n")
-f.write("\t\"Entry Point\";")
-f.write("\t\"Entry Point\" -> \"" + str(nodes[0]) + "\";")
+f.write("\t\"Entry Point\";\n")
+first_node = code_parsed[0][0]
+f.write("\t\"Entry Point\" -> \"" + str(first_node) + "\";\n")
 
 # Graph content
 for i in nodes:
@@ -141,13 +143,13 @@ for i in nodes:
             graph.edges[str(i), str(neigh[j])]['label']) + "\"] ;\n")
 
 #  Exit node
-f.write("\t\"Exit\";")
-if "lr" in nodes:
-    f.write("\t\"lr\" -> \"Exit\";")
+f.write("\t\"Exit\";\n")
+
+if l_instr != -1:
+    f.write("\t\"" + str(l_addr) + "\" -> \"Exit\";\n")
 else:
-    last_parsed = re.split("\t", code[(len(code)-1)])
-    last_node = p[0]
-    f.write("\t\"" + str(s[:-1]) + "\" -> \"Exit\";")
+    last_node = code_parsed[len(code_parsed) - 1][0]
+    f.write("\t\"" + str(last_node) + "\" -> \"Exit\";\n")
 f.write("}")
 f.close()
 
