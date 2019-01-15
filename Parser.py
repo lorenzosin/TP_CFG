@@ -9,14 +9,13 @@ from graphviz import Digraph
 
 # I am assming that the file exists and user has permissions -> No checks
 f = open("out.txt", "r")
-
 # Research for the main block
 end_lecture = 0  # Flag external loop
 end_main = 0  # Flag internal loop for main
 code = []  # Where to put the main block
 while end_lecture == 0:
     row = f.readline()
-    useful = row.find("<main>:")  # Searching starting point
+    useful = row.find("<find_min>:")  # Searching starting point
     if (useful != -1):
         # code.append(row.strip())
         while end_main == 0:
@@ -26,20 +25,17 @@ while end_lecture == 0:
                 end_lecture = 1
             else:
                 code.append(row.strip())  # Strip() removes the extra \n
-
 # Closure of the file
 f.close()
 
-# Display of the code
-# for i in code:
-#     print(i)
 
+# Graph construction
 graph = nx.DiGraph()
-graph.clear()
-len(code)
-instr_set = []
+graph.clear()           # This should be remover after
+instr_set = []          # Store all the found instruction
 for i in range(0, len(code)):
     prev_is_branch = 0  # Flag used to manage the targets
+    is_branch = 0
     if((i + 1) < len(code)):  # Still not the last row
         # First line of the pair
         prev_parsed = re.split("\t", code[i])
@@ -49,17 +45,21 @@ for i in range(0, len(code)):
         prev_instruction = prev_parsed[2]
         prev_arguments = prev_parsed[3]
 
+        if is_branch == 1:
+            add_edge(address, prev_address, label="untaken")
+
         if (prev_address not in graph.nodes()):
             graph.add_node(prev_address)
 
         if (prev_instruction[0]) == "b":
             # There could be the target name
+            prev_is_branch = 1
             prev_target = prev_parsed[3].split(" ")
             # print("branch to " + str(target[0]))
             if (str(prev_target[0]) not in graph.nodes()):
                 graph.add_node(str(prev_target[0]))
-                graph.add_edge(prev_address, str(prev_target[0]))
-                prev_is_branch = 1
+                graph.add_edge(prev_address, str(
+                    prev_target[0]), label="taken")
 
         # Following line
         parsed = re.split("\t", code[i + 1])
@@ -75,13 +75,16 @@ for i in range(0, len(code)):
 
         # Connect the previous instruction with the following one, if the case
         if(prev_is_branch == 0):
-            graph.add_edge(prev_address, address)
+            graph.add_edge(prev_address, address, label="")
+        else:
+            graph.add_edge(prev_address, address, label="untaken")
 
         if (instruction[0]) == "b":
+            is_branch = 1
             target = parsed[3].split(" ")   # There could be the target name
             if (str(target[0]) not in graph.nodes()):
                 graph.add_node(str(target[0]))
-            graph.add_edge(address, str(target[0]))
+            graph.add_edge(address, str(target[0]), label="taken")
 
         if prev_instruction not in instr_set:
             instr_set.append(prev_instruction)
@@ -98,11 +101,11 @@ for i in range(0, len(code)):
         graph.add_node(address)
         if (instruction[0]) == "b":
             target = parsed[3].split(" ")   # There could be the target name
+            graph.add_node(str(target[0]))
+            graph.add_edge(address, str(target[0]), label="taken")
             # print("branch to " + str(target[0]))
         if instruction not in instr_set:
             instr_set.append(instruction)
-        graph.add_node(str(target[0]))
-        graph.add_edge(address, str(target[0]))
 
     # print(graph.nodes)
 #
@@ -121,30 +124,30 @@ print("\nList of adjacent nodes:")
 for i in nodes:
     print("\tNode " + str(i) + " --> " + str(list(graph.neighbors(i))))
 
-# Generate the new dot file
-# WriteDot("CFG.dot", graph)
-# dot = Digraph("Reconstructed CFG")
-# for i in graph.nodes():
-#     dot.node(i)
-#
-# for i in graph.edges():
-#     print(i)
-#
-# print(dot.source)
-#
-# dot.render("CFG")
-
-
-# def WriteDot(fout, graph):
+# Entry Point
 print("Generating output file CFG.dot..")
 f = open("CFG.dot", "w")
 f.write("digraph ReconstructedCFG {\n")
+f.write("\t\"Entry Point\";")
+f.write("\t\"Entry Point\" -> \"" + str(nodes[0]) + "\";")
+
+# Graph content
 for i in nodes:
     # f.write("\t" + i + " [ label = \"" + i + "\" ];\n")
     f.write("\t\"" + i + "\";\n")
     neigh = list(graph.neighbors(i))
     for j in range(len(neigh)):
-        f.write("\t\"" + str(i) + "\" -> \"" + neigh[j] + "\";\n")
+        f.write("\t\"" + str(i) + "\" -> \"" + neigh[j] + "\" [label = \"" + str(
+            graph.edges[str(i), str(neigh[j])]['label']) + "\"] ;\n")
+
+#  Exit node
+f.write("\t\"Exit\";")
+if "lr" in nodes:
+    f.write("\t\"lr\" -> \"Exit\";")
+else:
+    last_parsed = re.split("\t", code[(len(code)-1)])
+    last_node = p[0]
+    f.write("\t\"" + str(s[:-1]) + "\" -> \"Exit\";")
 f.write("}")
 f.close()
 
