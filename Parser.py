@@ -15,7 +15,7 @@ end_main = 0  # Flag internal loop for main
 code = []  # Where to put the main block
 while end_lecture == 0:
     row = f.readline()
-    useful = row.find("<main>:")  # Searching starting point
+    useful = row.find("<find_min>:")  # Searching starting point
     if (useful != -1):
         # code.append(row.strip())
         while end_main == 0:
@@ -154,5 +154,5 @@ else:
 f.write("}")
 f.close()
 
-print("Generating output file CFG.dot..")
+print("Generating output file CFG.pdf..")
 os.system("dot -Tps CFG.dot -o CFG.pdf")
