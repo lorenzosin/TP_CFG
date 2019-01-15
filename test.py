@@ -13,3 +13,6 @@ print(G.nodes.data())
 
 G.add_edge("Lol","Pizza", label = "Tusco2")
 print(G.nodes.data())
+
+G.add_node("Lol", label="Tusco3")
+print(G.nodes.data())
