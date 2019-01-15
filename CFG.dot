@@ -1,43 +1,59 @@
 digraph ReconstructedCFG {
 	"Entry Point";
-	"Entry Point" -> "8220";
-	"8220" [label = "ldr
+	"Entry Point" -> "8250";
+	"8220" [label = "<find_min>
 00008220"];
-	"8220" -> "8224" [label = ""] ;
-	"8224" [label = "cmp
-00008224"];
-	"8224" -> "8228" [label = ""] ;
-	"8228" [label = "ble
-00008228"];
-	"8228" -> "8248" [label = "taken"] ;
-	"8228" -> "822c" [label = "untaken"] ;
-	"822c" [label = "mov
-0000822c"];
-	"822c" -> "8230" [label = ""] ;
-	"8230" [label = "add
-00008230"];
-	"8230" -> "8234" [label = ""] ;
-	"8234" [label = "ldr
-00008234"];
-	"8234" -> "8238" [label = ""] ;
-	"8238" [label = "cmp
-00008238"];
-	"8238" -> "823c" [label = ""] ;
-	"823c" [label = "movge
-0000823c"];
-	"823c" -> "8240" [label = ""] ;
-	"8240" [label = "cmp
-00008240"];
-	"8240" -> "8244" [label = ""] ;
-	"8244" [label = "bne
-00008244"];
-	"8244" -> "8248" [label = "untaken"] ;
-	"8244" -> "8234" [label = "taken"] ;
-	"8248" [label = "mov
-00008248"];
-	"8248" -> "824c" [label = ""] ;
-	"824c" [label = "bx
-0000824c"];
+	"8220" -> "8274" [label = "Return from outer block"] ;
+	"8250" [label = "push
+00008250"];
+	"8250" -> "8254" [label = ""] ;
+	"8254" [label = "sub
+00008254"];
+	"8254" -> "8258" [label = ""] ;
+	"8258" [label = "ldr
+00008258"];
+	"8258" -> "825c" [label = ""] ;
+	"825c" [label = "add
+0000825c"];
+	"825c" -> "8260" [label = ""] ;
+	"8260" [label = "ldm
+00008260"];
+	"8260" -> "8264" [label = ""] ;
+	"8264" [label = "stm
+00008264"];
+	"8264" -> "8268" [label = ""] ;
+	"8268" [label = "mov
+00008268"];
+	"8268" -> "826c" [label = ""] ;
+	"826c" [label = "mov
+0000826c"];
+	"826c" -> "8270" [label = ""] ;
+	"8270" [label = "bl
+00008270"];
+	"8270" -> "8220" [label = "Unconditional branch to outer block"] ;
+	"8274" [label = "mov
+00008274"];
+	"8274" -> "8278" [label = ""] ;
+	"8278" [label = "ldr
+00008278"];
+	"8278" -> "827c" [label = ""] ;
+	"827c" [label = "bl
+0000827c"];
+	"827c" -> "8440" [label = "Unconditional branch to outer block"] ;
+	"8280" [label = "mov
+00008280"];
+	"8280" -> "8284" [label = ""] ;
+	"8284" [label = "add
+00008284"];
+	"8284" -> "8288" [label = ""] ;
+	"8288" [label = "pop
+00008288"];
+	"8288" -> "828c" [label = ""] ;
+	"828c" [label = "bx
+0000828c"];
+	"8440" [label = "<printf>
+00008440"];
+	"8440" -> "8280" [label = "Return from outer block"] ;
 	"Exit";
-	"824c" -> "Exit";
+	"828c" -> "Exit";
 }

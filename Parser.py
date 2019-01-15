@@ -15,7 +15,7 @@ end_main = 0  # Flag internal loop for main
 code = []  # Where to put the main block
 while end_lecture == 0:
     row = f.readline()
-    useful = row.find("<find_min>:")  # Searching starting point
+    useful = row.find("<main>:")  # Searching starting point
     if (useful != -1):
         # code.append(row.strip())
         while end_main == 0:
@@ -79,6 +79,11 @@ for i in range(len(code_parsed)):
                 graph.add_edge(addr, n_instr, label="Unconditional branch")
             else:
                 graph.add_edge(addr, n_instr, label="Unconditional branch to outer block")
+                # Adding outer block node label
+                tmp = code_parsed[i][3]
+                pars = tmp.split(" ")
+                block_name = pars[1]
+                graph.add_node(n_instr, label=str(block_name))
                 if i + 1 < len(code_parsed):
                     graph.add_edge(n_instr, code_parsed[i + 1][0], label="Return from outer block")
     else:
@@ -97,6 +102,10 @@ for i in range(len(code_parsed)):
                         graph.add_edge(addr, code_parsed[i + 1][0], label="untaken")
                 else:
                     graph.add_edge(addr, n_instr, label="taken to outer block")
+                    tmp = code_parsed[i][3]
+                    pars = tmp.split(" ")
+                    block_name = pars[1]
+                    graph.add_node(n_instr, label=str(block_name))
                     if i + 1 < len(code_parsed):
                         graph.add_edge(n_instr, code_parsed[i + 1][0], label="Return from outer block")
                         graph.add_edge(addr, code_parsed[i + 1][0], label="untaken")
@@ -104,7 +113,6 @@ for i in range(len(code_parsed)):
             if i + 1 < len(code_parsed):
                 graph.add_edge(addr, code_parsed[i + 1][0], label="")
 
-# print(graph.nodes())
 
 print("#############################################")
 print("#### Assembly Parser - CFG Reconstructor ####")
