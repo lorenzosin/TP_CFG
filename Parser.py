@@ -65,7 +65,7 @@ l_instr = -1  # Flag until found
 for i in range(len(code_parsed)):
     addr = code_parsed[i][0]
     instr = code_parsed[i][2]
-    graph.add_node(addr)
+    graph.add_node(addr, label=str(instr))
     if instr == "b" or instr == "bx" or instr == "bl":  # Unconditional branch
         tmp = code_parsed[i][3]
         pars = tmp.split(" ")
@@ -78,11 +78,9 @@ for i in range(len(code_parsed)):
             if n_instr in same_block:
                 graph.add_edge(addr, n_instr, label="Unconditional branch")
             else:
-                graph.add_edge(
-                    addr, n_instr, label="Unconditional branch to outer block")
+                graph.add_edge(addr, n_instr, label="Unconditional branch to outer block")
                 if i + 1 < len(code_parsed):
-                    graph.add_edge(
-                        n_instr, code_parsed[i + 1][0], label="Return from outer block")
+                    graph.add_edge(n_instr, code_parsed[i + 1][0], label="Return from outer block")
     else:
         if instr[0] == "b":  # In this branch, only conditional ones remained
             tmp = code_parsed[i][3]
@@ -96,16 +94,12 @@ for i in range(len(code_parsed)):
                 if n_instr in same_block:
                     graph.add_edge(addr, n_instr, label="taken")
                     if i + 1 < len(code_parsed):
-                        graph.add_edge(
-                            addr, code_parsed[i + 1][0], label="untaken")
+                        graph.add_edge(addr, code_parsed[i + 1][0], label="untaken")
                 else:
-                    graph.add_edge(
-                        addr, n_instr, label="taken to outer block")
+                    graph.add_edge(addr, n_instr, label="taken to outer block")
                     if i + 1 < len(code_parsed):
-                        graph.add_edge(
-                            n_instr, code_parsed[i + 1][0], label="Return from outer block")
-                        graph.add_edge(
-                            addr, code_parsed[i + 1][0], label="untaken")
+                        graph.add_edge(n_instr, code_parsed[i + 1][0], label="Return from outer block")
+                        graph.add_edge(addr, code_parsed[i + 1][0], label="untaken")
         else:
             if i + 1 < len(code_parsed):
                 graph.add_edge(addr, code_parsed[i + 1][0], label="")
@@ -136,11 +130,10 @@ f.write("\t\"Entry Point\" -> \"" + str(first_node) + "\";\n")
 # Graph content
 for i in nodes:
     # f.write("\t" + i + " [ label = \"" + i + "\" ];\n")
-    f.write("\t\"" + i + "\";\n")
+    f.write("\t\"" + i + "\" [label = \"" + str(graph.node[i]['label']) + "\n" + str("0000" + str(i)) + "\"];\n")
     neigh = list(graph.neighbors(i))
     for j in range(len(neigh)):
-        f.write("\t\"" + str(i) + "\" -> \"" + neigh[j] + "\" [label = \"" + str(
-            graph.edges[str(i), str(neigh[j])]['label']) + "\"] ;\n")
+        f.write("\t\"" + str(i) + "\" -> \"" + neigh[j] + "\" [label = \"" + str(graph.edges[str(i), str(neigh[j])]['label']) + "\"] ;\n")
 
 #  Exit node
 f.write("\t\"Exit\";\n")
