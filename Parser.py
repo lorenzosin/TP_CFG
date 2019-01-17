@@ -2,10 +2,13 @@
 import networkx as nx
 # Using re = regular expressions for the lines parsing
 import re
+# Using os to run terminal command for the conversion dot -> pdf
+import os
+# Using graph to generate the dot file
+from graphviz import Digraph
 
 # I am assming that the file exists and user has permissions -> No checks
 f = open("out.txt", "r")
-
 # Research for the main block
 end_lecture = 0  # Flag external loop
 end_main = 0  # Flag internal loop for main
@@ -22,92 +25,99 @@ while end_lecture == 0:
                 end_lecture = 1
             else:
                 code.append(row.strip())  # Strip() removes the extra \n
-
 # Closure of the file
 f.close()
 
-# Display of the code
-# for i in code:
-#     print(i)
 
+# Graph construction
 graph = nx.DiGraph()
-graph.clear()
-len(code)
+
+
+# Code parsing
+code_parsed = []
+for i in range(len(code)):
+    row = re.split("\t", code[i])
+    code_parsed.append(row)
+
+# print(code_parsed)
+
+# for i in range(len(code)):
+#     print(code_parsed[i][0])
+
+for i in range(len(code_parsed)):
+    addr = code_parsed[i][0]
+    code_parsed[i][0] = addr[:-1]
+
+
 instr_set = []
-for i in range(0, len(code)):
-    prev_is_branch = 0  # Flag used to manage the targets
-    if((i + 1) < len(code)):  # Still not the last row
-        # First line of the pair
-        prev_parsed = re.split("\t", code[i])
-        prev_address = prev_parsed[0]     # take first element
-        prev_address = prev_address[:-1]  # remove the ':' character
-        prev_name = prev_parsed[1]
-        prev_instruction = prev_parsed[2]
-        prev_arguments = prev_parsed[3]
+same_block = []
+for i in range(len(code_parsed)):
+    addr = code_parsed[i][0]
+    same_block.append(addr)
+    instr = code_parsed[i][2]
+    if instr not in instr_set:
+        instr_set.append(instr)
 
-        if (prev_address not in graph.nodes()):
-            graph.add_node(prev_address)
+# print(same_block)
+# print(instr_set)
 
-        if (prev_instruction[0]) == "b":
-            # There could be the target name
-            prev_target = prev_parsed[3].split(" ")
-            # print("branch to " + str(target[0]))
-            if (str(prev_target[0]) not in graph.nodes()):
-                graph.add_node(str(prev_target[0]))
-                graph.add_edge(prev_address, str(prev_target[0]))
-                prev_is_branch = 1
+l_instr = -1  # Flag until found
+for i in range(len(code_parsed)):
+    addr = code_parsed[i][0]
+    instr = code_parsed[i][2]
+    graph.add_node(addr, label=str(instr))
+    if instr == "b" or instr == "bx" or instr == "bl":  # Unconditional branch
+        tmp = code_parsed[i][3]
+        pars = tmp.split(" ")
+        n_instr = pars[0]
+        if n_instr == "lr":
+            l_instr = instr
+            l_addr = addr
+            break
+        else:
+            if n_instr in same_block:
+                graph.add_edge(addr, n_instr, label="Unconditional branch")
+            else:
+                graph.add_edge(addr, n_instr, label="Unconditional branch to outer block")
+                # Adding outer block node label
+                tmp = code_parsed[i][3]
+                pars = tmp.split(" ")
+                block_name = pars[1]
+                graph.add_node(n_instr, label=str(block_name))
+                if i + 1 < len(code_parsed):
+                    graph.add_edge(n_instr, code_parsed[i + 1][0], label="Return from outer block")
+    else:
+        if instr[0] == "b":  # In this branch, only conditional ones remained
+            tmp = code_parsed[i][3]
+            pars = tmp.split(" ")
+            n_instr = pars[0]
+            if n_instr == "lr":
+                l_instr = instr
+                l_addr = addr
+                break
+            else:
+                if n_instr in same_block:
+                    graph.add_edge(addr, n_instr, label="taken")
+                    if i + 1 < len(code_parsed):
+                        graph.add_edge(addr, code_parsed[i + 1][0], label="untaken")
+                else:
+                    graph.add_edge(addr, n_instr, label="taken to outer block")
+                    tmp = code_parsed[i][3]
+                    pars = tmp.split(" ")
+                    block_name = pars[1]
+                    graph.add_node(n_instr, label=str(block_name))
+                    if i + 1 < len(code_parsed):
+                        graph.add_edge(n_instr, code_parsed[i + 1][0], label="Return from outer block")
+                        graph.add_edge(addr, code_parsed[i + 1][0], label="untaken")
+        else:
+            if i + 1 < len(code_parsed):
+                graph.add_edge(addr, code_parsed[i + 1][0], label="")
 
-        # Following line
-        parsed = re.split("\t", code[i + 1])
-        address = parsed[0]     # take first element
-        address = address[:-1]  # remove the ':' character
-        name = parsed[1]
-        instruction = parsed[2]
-        arguments = parsed[3]
 
-        # Adding the new node, if not already discovered
-        if(address not in graph.nodes()):
-            graph.add_node(address)
-
-        # Connect the previous instruction with the following one, if the case
-        if(prev_is_branch == 0):
-            graph.add_edge(prev_address, address)
-
-        if (instruction[0]) == "b":
-            target = parsed[3].split(" ")   # There could be the target name
-            if (str(target[0]) not in graph.nodes()):
-                graph.add_node(str(target[0]))
-            graph.add_edge(address, str(target[0]))
-
-        if prev_instruction not in instr_set:
-            instr_set.append(prev_instruction)
-        if instruction not in instr_set:
-            instr_set.append(instruction)
-
-    else:   # This is the last row
-        parsed = re.split("\t", code[i])
-        address = parsed[0]     # take first element
-        address = address[:-1]  # remove the ':' character
-        name = parsed[1]
-        instruction = parsed[2]
-        arguments = parsed[3]
-        graph.add_node(address)
-        if (instruction[0]) == "b":
-            target = parsed[3].split(" ")   # There could be the target name
-            # print("branch to " + str(target[0]))
-        if instruction not in instr_set:
-            instr_set.append(instruction)
-        graph.add_node(str(target[0]))
-        graph.add_edge(address, str(target[0]))
-
-    # print(graph.nodes)
-#
-# for i in graph.nodes():
-#     if((list(graph.neighbors(i)).count) == 0):
 print("#############################################")
 print("#### Assembly Parser - CFG Reconstructor ####")
 print("#############################################")
-print("\nList of instructions:")
+print("Instruction Set:")
 for i in instr_set:
     print("\t" + str(i))
 
@@ -116,3 +126,33 @@ nodes = sorted(graph.nodes())
 print("\nList of adjacent nodes:")
 for i in nodes:
     print("\tNode " + str(i) + " --> " + str(list(graph.neighbors(i))))
+
+# Entry Point
+print("Generating output file CFG.dot..")
+f = open("CFG.dot", "w")
+f.write("digraph ReconstructedCFG {\n")
+f.write("\t\"Entry Point\";\n")
+first_node = code_parsed[0][0]
+f.write("\t\"Entry Point\" -> \"" + str(first_node) + "\";\n")
+
+# Graph content
+for i in nodes:
+    # f.write("\t" + i + " [ label = \"" + i + "\" ];\n")
+    f.write("\t\"" + i + "\" [label = \"" + str(graph.node[i]['label']) + "\n" + str("0000" + str(i)) + "\"];\n")
+    neigh = list(graph.neighbors(i))
+    for j in range(len(neigh)):
+        f.write("\t\"" + str(i) + "\" -> \"" + neigh[j] + "\" [label = \"" + str(graph.edges[str(i), str(neigh[j])]['label']) + "\"] ;\n")
+
+#  Exit node
+f.write("\t\"Exit\";\n")
+
+if l_instr != -1:
+    f.write("\t\"" + str(l_addr) + "\" -> \"Exit\";\n")
+else:
+    last_node = code_parsed[len(code_parsed) - 1][0]
+    f.write("\t\"" + str(last_node) + "\" -> \"Exit\";\n")
+f.write("}")
+f.close()
+
+print("Generating output file CFG.pdf..")
+os.system("dot -Tps CFG.dot -o CFG.pdf")
