@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<flowfacts>
+    <function name="bsort_return" executed="true" extern="false">
+        <loop loopId="2" line="74" source="bsort.c" exact="true" maxcount="99" totalcount="99">
+        </loop>
+    </function>
+</flowfacts>

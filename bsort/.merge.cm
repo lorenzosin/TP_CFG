@@ -1,0 +1,100 @@
+void bsort_init(void );
+void bsort_main(void );
+int bsort_return(void );
+int bsort_Initialize(int Array[]);
+int bsort_BubbleSort(int Array[]);
+static int bsort_Array[100];
+
+int bsort_Initialize(int Array[])
+{
+	int Index;
+# 56 "bsort.c"
+	for(Index = 0; Index < 100; Index++)
+# 57 "bsort.c"
+		Array[Index] = ((Index + 1)) * -1;
+# 59 "bsort.c"
+	return 0;
+}
+
+void bsort_init(void )
+{
+# 65 "bsort.c"
+	bsort_Initialize(bsort_Array);
+}
+
+int bsort_return(void _0)
+{
+	int Sorted = 1;
+	int Index_0;
+# 74 "bsort.c"
+	for(Index_0 = 0; Index_0 < 100 - 1; Index_0++)
+# 75 "bsort.c"
+		Sorted = Sorted && bsort_Array[Index] < bsort_Array[Index + 1];
+# 77 "bsort.c"
+	return 1 - Sorted;
+}
+
+int bsort_BubbleSort(int Array_0[])
+{
+	char __tmp_0__ = 0, __tmp_1__ = 0;
+	int Sorted_0 = 0;
+	int Temp, Index_1, i;
+# 93 "bsort.c"
+	for(i = 0; !__tmp_1__ && i < 100 - 1; __tmp_1__ || i++)
+# 93 "bsort.c"
+	{
+# 94 "bsort.c"
+		Sorted_0 = 1;
+# 96 "bsort.c"
+		for(Index_1 = 0; !__tmp_0__ && Index_1 < 100 - 1; __tmp_0__ ||
+			Index_1++)
+# 96 "bsort.c"
+		{
+# 97 "bsort.c"
+			if(Index_1 > 100 - i)
+# 98 "bsort.c"
+				__tmp_0__ = 1 != 0;
+			if(!__tmp_0__)
+			{
+# 99 "bsort.c"
+				if(Array_0[Index] > Array_0[Index + 1])
+# 99 "bsort.c"
+				{
+# 100 "bsort.c"
+					Temp = Array_0[Index];
+# 101 "bsort.c"
+					Array_0[Index] = Array_0[Index + 1];
+# 102 "bsort.c"
+					Array_0[Index + 1] = Temp;
+# 103 "bsort.c"
+					Sorted_0 = 0;
+				}
+			}
+		}
+		__tmp_0__ = 0;
+# 107 "bsort.c"
+		if(Sorted_0)
+# 108 "bsort.c"
+			__tmp_1__ = 1 != 0;
+	}
+	__tmp_1__ = 0;
+# 111 "bsort.c"
+	return 0;
+}
+
+void bsort_main(void _1)
+{
+# 117 "bsort.c"
+	bsort_BubbleSort(bsort_Array);
+}
+
+int main(void _2)
+{
+# 127 "bsort.c"
+	bsort_init();
+# 128 "bsort.c"
+	bsort_main();
+# 130 "bsort.c"
+	return bsort_return();
+}
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<flowfacts>
+    <function name="bsort_BubbleSort" executed="true" extern="false">
+        <loop loopId="3" line="93" source="bsort.c" exact="false" maxcount="99" totalcount="99">
+            <loop loopId="4" line="96" source="bsort.c" exact="false" maxcount="99" totalcount="9801">
+                <conditional> <condition line="97" source="bsort.c" executed="true"> </condition>
+                    <case cond="1"  executed="true">
+                        <conditional> <condition line="98" source="bsort.c" executed="true"> </condition>
+                            <case cond="1"  executed="true">
+                            </case>
+                            <case cond="0" executed="true">
+                            </case>
+                        </conditional>
+                    </case>
+                    <case cond="0" executed="true">
+                    </case>
+                </conditional>
+            </loop>
+        </loop>
+    </function>
+</flowfacts>
