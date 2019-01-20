@@ -32,7 +32,7 @@ G.add_edge("E", "F")
 
 # print(list(G.successors("A")))
 
-print(find_succ(G, "A", A))
+print(find_succ(G, "A", "A"))
 
 
 # n = G.successors("A")
