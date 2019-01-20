@@ -1,18 +1,40 @@
 import re
-import networkx as nx
+from networkx import *
 
-string = "Ciao sono lorenzo"
-saluto,verbo,nome = re.split(" ",string)
-print(saluto)
-print(verbo)
-print(nome)
+
+def find_succ(G, node, path=[]):
+    path += [node]
+
+    for i in G.adj(node):
+        if i not in path:
+            path = find_succ(G, i, path)
+
+    return path
+
 
 G = nx.DiGraph()
-G.add_node("Lol", label="Tusco")
-print(G.nodes.data())
+G.add_node("A")
+G.add_node("B")
+G.add_node("C")
+G.add_node("D")
+G.add_node("E")
+G.add_node("F")
+G.add_edge("A", "B")
+G.add_edge("B", "C")
+G.add_edge("C", "D")
+G.add_edge("D", "E")
+G.add_edge("E", "F")
 
-G.add_edge("Lol","Pizza", label = "Tusco2")
-print(G.nodes.data())
 
-G.add_node("Lol", label="Tusco3")
-print(G.nodes.data())
+# print(G.nodes)
+# print(G.node("A"))
+# print(G.nodes("A"))
+
+# print(list(G.successors("A")))
+
+print(find_succ(G, "A", A))
+
+
+# n = G.successors("A")
+# for i in n:
+#     print(i)

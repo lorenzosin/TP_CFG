@@ -2811,7 +2811,7 @@ Disassembly of section .text:
     ab3c:	e1a07000 	mov	r7, r0
     ab40:	e2811001 	add	r1, r1, #1
     ab44:	e7990105 	ldr	r0, [r9, r5, lsl #2]
-    ab48:	eb001b59 	bl	118b4 <__aeabi_uidiv>
+    ab48:	eb001b59 	bl	118b4 <__udivsi3>
     ab4c:	e1a0a105 	lsl	sl, r5, #2
     ab50:	e089300a 	add	r3, r9, sl
     ab54:	e2506000 	subs	r6, r0, #0
@@ -9190,7 +9190,7 @@ Disassembly of section .text:
    10c60:	31a00007 	movcc	r0, r7
    10c64:	23e00102 	mvncs	r0, #-2147483648	; 0x80000000
    10c68:	e1a0100a 	mov	r1, sl
-   10c6c:	eb000355 	bl	119c8 <__aeabi_idiv>
+   10c6c:	eb000355 	bl	119c8 <__divsi3>
    10c70:	e1a02008 	mov	r2, r8
    10c74:	e003009a 	mul	r3, sl, r0
    10c78:	e594101c 	ldr	r1, [r4, #28]
@@ -10003,14 +10003,14 @@ Disassembly of section .text:
    118ac:	e12fff1e 	bx	lr
    118b0:	00023320 	.word	0x00023320
 
-000118b4 <__aeabi_uidiv>:
+000118b4 <__udivsi3>:
    118b4:	e2512001 	subs	r2, r1, #1
    118b8:	012fff1e 	bxeq	lr
-   118bc:	3a000036 	bcc	1199c <__aeabi_uidiv+0xe8>
+   118bc:	3a000036 	bcc	1199c <__udivsi3+0xe8>
    118c0:	e1500001 	cmp	r0, r1
-   118c4:	9a000022 	bls	11954 <__aeabi_uidiv+0xa0>
+   118c4:	9a000022 	bls	11954 <__udivsi3+0xa0>
    118c8:	e1110002 	tst	r1, r2
-   118cc:	0a000023 	beq	11960 <__aeabi_uidiv+0xac>
+   118cc:	0a000023 	beq	11960 <__udivsi3+0xac>
    118d0:	e311020e 	tst	r1, #-536870912	; 0xe0000000
    118d4:	01a01181 	lsleq	r1, r1, #3
    118d8:	03a03008 	moveq	r3, #8
@@ -10019,12 +10019,12 @@ Disassembly of section .text:
    118e4:	31510000 	cmpcc	r1, r0
    118e8:	31a01201 	lslcc	r1, r1, #4
    118ec:	31a03203 	lslcc	r3, r3, #4
-   118f0:	3afffffa 	bcc	118e0 <__aeabi_uidiv+0x2c>
+   118f0:	3afffffa 	bcc	118e0 <__udivsi3+0x2c>
    118f4:	e3510102 	cmp	r1, #-2147483648	; 0x80000000
    118f8:	31510000 	cmpcc	r1, r0
    118fc:	31a01081 	lslcc	r1, r1, #1
    11900:	31a03083 	lslcc	r3, r3, #1
-   11904:	3afffffa 	bcc	118f4 <__aeabi_uidiv+0x40>
+   11904:	3afffffa 	bcc	118f4 <__udivsi3+0x40>
    11908:	e3a02000 	mov	r2, #0
    1190c:	e1500001 	cmp	r0, r1
    11910:	20400001 	subcs	r0, r0, r1
@@ -10041,7 +10041,7 @@ Disassembly of section .text:
    1193c:	e3500000 	cmp	r0, #0
    11940:	11b03223 	lsrsne	r3, r3, #4
    11944:	11a01221 	lsrne	r1, r1, #4
-   11948:	1affffef 	bne	1190c <__aeabi_uidiv+0x58>
+   11948:	1affffef 	bne	1190c <__udivsi3+0x58>
    1194c:	e1a00002 	mov	r0, r2
    11950:	e12fff1e 	bx	lr
    11954:	03a00001 	moveq	r0, #1
@@ -10068,15 +10068,15 @@ Disassembly of section .text:
 
 000119a8 <__aeabi_uidivmod>:
    119a8:	e3510000 	cmp	r1, #0
-   119ac:	0afffffa 	beq	1199c <__aeabi_uidiv+0xe8>
+   119ac:	0afffffa 	beq	1199c <__udivsi3+0xe8>
    119b0:	e92d4003 	push	{r0, r1, lr}
-   119b4:	ebffffbe 	bl	118b4 <__aeabi_uidiv>
+   119b4:	ebffffbe 	bl	118b4 <__udivsi3>
    119b8:	e8bd4006 	pop	{r1, r2, lr}
    119bc:	e0030092 	mul	r3, r2, r0
    119c0:	e0411003 	sub	r1, r1, r3
    119c4:	e12fff1e 	bx	lr
 
-000119c8 <__aeabi_idiv>:
+000119c8 <__divsi3>:
    119c8:	e3510000 	cmp	r1, #0
    119cc:	0a000043 	beq	11ae0 <.divsi3_skip_div0_test+0x110>
 

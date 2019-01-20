@@ -1,0 +1,52 @@
+digraph ReconstructedCFG {
+	"Entry Point";
+	"Entry Point" -> "82d0";
+	"82d0" [label = "mov
+000082d0"];
+	"82d0" -> "82d4" [label = ""] ;
+	"82d4" [label = "ldr
+000082d4"];
+	"82d4" -> "82d8" [label = ""] ;
+	"82d8" [label = "add
+000082d8"];
+	"82d8" -> "82dc" [label = ""] ;
+	"82dc" [label = "cmp
+000082dc"];
+	"82dc" -> "82e0" [label = ""] ;
+	"82e0" [label = "beq
+000082e0"];
+	"82e0" -> "82e4" [label = "untaken"] ;
+	"82e0" -> "82f8" [label = "taken"] ;
+	"82e4" [label = "ldr
+000082e4"];
+	"82e4" -> "82e8" [label = ""] ;
+	"82e8" [label = "ldr
+000082e8"];
+	"82e8" -> "82ec" [label = ""] ;
+	"82ec" [label = "cmp
+000082ec"];
+	"82ec" -> "82f0" [label = ""] ;
+	"82f0" [label = "movge
+000082f0"];
+	"82f0" -> "82f4" [label = ""] ;
+	"82f4" [label = "movlt
+000082f4"];
+	"82f4" -> "82f8" [label = ""] ;
+	"82f8" [label = "add
+000082f8"];
+	"82f8" -> "82fc" [label = ""] ;
+	"82fc" [label = "cmp
+000082fc"];
+	"82fc" -> "8300" [label = ""] ;
+	"8300" [label = "bne
+00008300"];
+	"8300" -> "82dc" [label = "taken"] ;
+	"8300" -> "8304" [label = "untaken"] ;
+	"8304" [label = "rsb
+00008304"];
+	"8304" -> "8308" [label = ""] ;
+	"8308" [label = "bx
+00008308"];
+	"Exit";
+	"8308" -> "Exit";
+}

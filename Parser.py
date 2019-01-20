@@ -28,10 +28,8 @@ while end_lecture == 0:
 # Closure of the file
 f.close()
 
-
 # Graph construction
 graph = nx.DiGraph()
-
 
 # Code parsing
 code_parsed = []
@@ -39,15 +37,9 @@ for i in range(len(code)):
     row = re.split("\t", code[i])
     code_parsed.append(row)
 
-# print(code_parsed)
-
-# for i in range(len(code)):
-#     print(code_parsed[i][0])
-
 for i in range(len(code_parsed)):
     addr = code_parsed[i][0]
     code_parsed[i][0] = addr[:-1]
-
 
 instr_set = []
 same_block = []
@@ -57,9 +49,6 @@ for i in range(len(code_parsed)):
     instr = code_parsed[i][2]
     if instr not in instr_set:
         instr_set.append(instr)
-
-# print(same_block)
-# print(instr_set)
 
 l_instr = -1  # Flag until found
 for i in range(len(code_parsed)):
