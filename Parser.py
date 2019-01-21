@@ -35,9 +35,17 @@ for i in range(len(code)):
     row = re.split("\t", code[i])
     code_parsed.append(row)
 
+# Removed : char after the address
 for i in range(len(code_parsed)):
     addr = code_parsed[i][0]
     code_parsed[i][0] = addr[:-1]
+
+# Removed .word instructions
+new = []
+for i in range(len(code_parsed)):
+    if code_parsed[i][2] != ".word":
+        new.append(code_parsed[i])
+code_parsed = new
 
 instr_set = []
 same_block = []

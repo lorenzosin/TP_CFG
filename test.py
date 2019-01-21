@@ -2,15 +2,18 @@ import re
 from networkx import *
 
 
-def find_succ(G, node, path=[]):
-    path += [node]
+# def find_succ(G, node, path=[]):
+#     path += [node]
+#
+#     for i in G.adj(node):
+#         if i not in path:
+#             path = find_succ(G, i, path)
+#
+#     return path
 
-    for i in G.adj(node):
-        if i not in path:
-            path = find_succ(G, i, path)
-
-    return path
-
+Lista = [["Giovanni","Mario","Salvatore"], ["Luca","Piero"]]
+print(Lista)
+Lista.remove(Lista[i])
 
 G = nx.DiGraph()
 G.add_node("A")
@@ -32,7 +35,7 @@ G.add_edge("E", "F")
 
 # print(list(G.successors("A")))
 
-print(find_succ(G, "A", "A"))
+# print(find_succ(G, "A", "A"))
 
 
 # n = G.successors("A")
