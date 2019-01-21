@@ -4,8 +4,6 @@ import networkx as nx
 import re
 # Using os to run terminal command for the conversion dot -> pdf
 import os
-# Using graph to generate the dot file
-from graphviz import Digraph
 
 # I am assming that the file exists and user has permissions -> No checks
 f = open("out.txt", "r")
